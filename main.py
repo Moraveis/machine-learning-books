@@ -1,15 +1,17 @@
 #%%
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.colors import ListedColormap
+
+import Perceptron
+import AdalineGD
 
 #%% reading Iris dataset
 df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data', header=None)
 
 #%% displaying last 5 rows
 df.tail()
-
-#%%
-import matplotlib.pyplot as plt
-import numpy as np
 
 #%% getting the 100 first rows as label vector
 y = df.iloc[0:100, 4].values
@@ -27,7 +29,6 @@ plt.legend(loc='upper left')
 plt.show()
 
 #%% instancing a perceptron object
-import Perceptron
 ppn = Perceptron.Perceptron(eta=0.1, n_iter=10)
 
 #%% training the model with or matrix and lable from the dataset
@@ -38,9 +39,6 @@ plt.plot(range(1, len(ppn.errors_) + 1), ppn.errors_, marker='o')
 plt.xlabel('Epochs')
 plt.ylabel('Number of misclassifications')
 plt.show()
-
-#%%
-from matplotlib.colors import ListedColormap
 
 #%%
 def plot_decision_regions(X, y, classifier, resolution=0.02):
@@ -63,7 +61,7 @@ def plot_decision_regions(X, y, classifier, resolution=0.02):
     for idx, cl in enumerate(np.unique(y)):
         plt.scatter(x=X[y == cl, 0], y=X[y == cl, 1], alpha=0.8, c=cmap(idx), marker=markers[idx], label=cl)
 
-#%% ploting decisions
+#%% plotting decisions
 plot_decision_regions(X, y, classifier=ppn)
 plt.xlabel('sepal lenght [cm]')
 plt.ylabel('petal lenght [cm]')
@@ -71,4 +69,30 @@ plt.legend(loc='upper left')
 plt.show()
 
 
-#%%
+#%% plotting Adaline
+fig, aux = plt.subplots(nrows=1, ncols=2, figsize=(8,4))
+
+
+#%% Instancing adaline model
+# ada1 = AdalineGD.AdalineGD(eta=0.01, n_iter=10)
+# ada1.fit(X, y)
+
+
+#%% setting values for display
+# ax[0].plot(range(1, len(ada1.cost_) + 1), np.log10(ada1.cost_), marker='o')
+# ax[0].set_xlabel('Epochs')
+# ax[0].set_ylabel('log(Sum-squared-error)')
+# ax[0].set_title('Adaline - Learning rate 0.01')
+
+
+#%% instancing second adaline model 
+# ada2 = AdalineGD.AdalineGD(n_iter=10, eta=0.0001).fit(X, y)
+
+
+#%% setting values for display
+# ax[1].plot(range(1, len(ada2.cost_) + 1), np.log10(ada2.cost_), marker='o')
+# ax[1].set_xlabel('Epochs')
+# ax[1].set_ylabel('log(Sum-squared-error)')
+# ax[1].set_title('Adaline - Learning rate 0.0001')
+# plt.show()
+
