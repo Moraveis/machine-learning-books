@@ -147,3 +147,52 @@ for label, mv in zip(range(1,4), mean_vecs):
 print('Within-class scatter matrix: %sx%s' % (S_W.shape[0], S_W.shape[1]))
 
 #%%
+print("Class label distribution: %s" % np.bincount(y_train)[1:])
+
+
+#%%
+d = 13
+S_W = np.zeros((d,d))
+for label, mv in zip(range(1,4), mean_vecs):
+    class_scatter = np.cov(X_train_std[y_train==label].T)
+    S_W += class_scatter
+
+print('Scaled within-class scatter matrix: %sx%s' % (S_W.shape[0], S_W.shape[1]))
+
+
+#%%
+mean_overall = np.mean(X_train_std, axis=0)
+d = 13
+S_B = np.zeros((d,d))
+for i, mean_vec in enumerate(mean_vecs):
+    n = X[y== i+1, :].shape[0]
+    mean_vec = mean_vec.reshape(d, 1)
+    mean_overall = mean_overall.reshape(d, 1)
+S_B += n * (mean_vec - mean_overall).dot((mean_vec - mean_overall).T)
+print('Between-class scatter matrix: %sx%s' % (S_B.shape[0], S_B.shape[1]))
+
+#%%
+eigen_vals, eigen_vecs = np.linalg.eig(np.linalg.inv(S_W).dot(S_B))
+
+
+#%%
+eigen_pairs = [(np.abs(eigen_vals[i]), eigen_vecs[:, i])
+    for i in range(len(eigen_vals))]
+eigen_pairs = sorted(eigen_pairs, key=lambda k: k[0], reverse=True)
+print('Eigenvalues in decreasing order:\n')
+for eigen_val in eigen_pairs:
+    print(eigen_val[0])
+
+#%%
+tot = sum(eigen_vals.real)
+discr = [(i / tot) for i in sorted(eigen_vals.real, reverse=True)]
+cum_discr = np.cumsum(discr)
+plt.bar(range(1,14), discr, alpha=0.5, align='center', label='individual "discriminability"')
+plt.step(range(1, 14), cum_discr, where='mid', label='cumulative "discriminability"')
+plt.ylabel('"discriminability" ratio')
+plt.xlabel('Linear Discriminants')
+plt.ylim([-0.1, 1.1])
+plt.legend(loc='best')
+plt.show()
+
+#%%
